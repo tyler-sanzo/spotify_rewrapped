@@ -8,9 +8,6 @@ def dropdown():
     timespan = ['Last four weeks', 'Last six months', 'Last five years']
     return render_template('index.html', timespan=timespan)
 
-if __name__ == "__main__":
-    app.run()
-
 @app.route("/")
 def view_home():
     return render_template("index.html", title="Home page")
@@ -34,3 +31,6 @@ def view_first_page():
 @app.route("/second")
 def view_second_page():
     return render_template("index.html", title="Second page")
+
+if __name__ == "__main__":
+    app.run()
