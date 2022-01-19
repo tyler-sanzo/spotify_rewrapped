@@ -130,3 +130,5 @@ dmypy.json
 
 # keys from spotify dashboard
 keys.py
+.DS_Store
+
