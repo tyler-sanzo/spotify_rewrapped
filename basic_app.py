@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 
 import pandas as pd
+import numpy as np
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -87,9 +88,10 @@ def home():
 
 		# if a post with form data key= 'top_tracks'
 		if request.form.get('top_tracks'):
-						
-			top_tracks = sp.current_user_top_tracks(limit=50, offset=0, time_range='medium_term')
+			data = request.form			
+			top_tracks = sp.current_user_top_tracks(limit=data['num_tracks'], time_range=data['time_range'])
 			df = pd.DataFrame(top_tracks_cleaner(top_tracks))
+			df.index = np.arange(1, len(df) + 1)
 
 			return render_template('user_data.html', data=df.to_html())
 
