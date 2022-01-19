@@ -61,8 +61,8 @@ auth_manager = SpotifyOAuth(
 	'user-library-read',
 	'user-library-read'
 	],
-	client_id='d46bd16fe0b44e05889ba6e647a8f181',
-	client_secret='34baa165efff4a60a93de79d090c1ae7',
+	client_id='',
+	client_secret='',
 	redirect_uri="http://localhost:8888/",
 	show_dialog=True
 	)
