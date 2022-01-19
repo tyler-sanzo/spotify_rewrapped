@@ -31,9 +31,24 @@ def saved_songs_cleaner(data):
             'artists': i['track']['artists'][0]['name'],
             'id': i['track']['id'],
             'popularity': i['track']['popularity']
-        })
+            })
 
     return x
+
+def top_tracks_cleaner(data):
+	x = []
+	s = data['items']
+
+	for i in s:
+		x.append({
+        	'song': i['name'],
+            'album': i['album']['name'],
+            'artists': i['artists'][0]['name'],
+            'id': i['id'],
+            'popularity': i['popularity']
+            })
+	
+	return x
 
 
 app = Flask(__name__)
@@ -41,9 +56,13 @@ app.secret_key = 'wowza'
 
 
 auth_manager = SpotifyOAuth(
-	scope='user-library-read',
-	client_id='',
-	client_secret='',
+	scope=['user-top-read',
+	'user-read-recently-played',
+	'user-library-read',
+	'user-library-read'
+	],
+	client_id='d46bd16fe0b44e05889ba6e647a8f181',
+	client_secret='34baa165efff4a60a93de79d090c1ae7',
 	redirect_uri="http://localhost:8888/",
 	show_dialog=True
 	)
@@ -56,11 +75,12 @@ def home():
 	# template on api auth token return
 	if request.args.get('code'):
 		session['access_token'] = request.args.get('code')
+		# df = pd.DataFrame(saved_songs(saved_tracks))
 
 		return render_template('logged_in.html')
 
 
-	# templates on POST method
+	# template on user-input return
 	if request.method == 'POST':
 
 		if request.form.get('saved_tracks'):
@@ -73,6 +93,16 @@ def home():
 
 			return render_template('user_data.html', data=df.to_html())
 
+
+		if request.form.get('top_tracks'):
+			auth_manager.get_access_token(session.get('access_token'))
+			sp = spotipy.Spotify(auth_manager=auth_manager)
+			
+			top_tracks = sp.current_user_top_tracks(limit=50, offset=0, time_range='medium_term')
+
+			df = pd.DataFrame(top_tracks_cleaner(top_tracks))
+
+			return render_template('user_data.html', data=df.to_html())
 
 	# initial load in template
 	return render_template('index.html')
