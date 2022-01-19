@@ -1,23 +1,12 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 
 import pandas as pd
-import json
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+from keys import client_id, client_secret
 
-# import requests
-
-login_html='''
-
-<h1>Login Page</h1>
-<br>
-<form action='/login' method='post'>
-	<input type='submit' value='Authenticate'>
-</form>
-
-'''
 
 def saved_songs_cleaner(data):    
     x = []
@@ -61,8 +50,8 @@ auth_manager = SpotifyOAuth(
 	'user-library-read',
 	'user-library-read'
 	],
-	client_id='',
-	client_secret='',
+	client_id=client_id,
+	client_secret=client_secret,
 	redirect_uri="http://localhost:8888/",
 	show_dialog=True
 	)
@@ -72,43 +61,43 @@ auth_manager = SpotifyOAuth(
 @app.route('/', methods=['GET', 'POST'])
 def home():
 
-	# template on api auth token return
+	# executes if api sends a get request with the 'code' argument
 	if request.args.get('code'):
+		
+		# this saves the auth token into a session object
 		session['access_token'] = request.args.get('code')
-		# df = pd.DataFrame(saved_songs(saved_tracks))
 
 		return render_template('logged_in.html')
 
 
-	# template on user-input return
+	# block executes if a post is sent
+	# here is where api calls are executed
 	if request.method == 'POST':
 
+		auth_manager.get_access_token(session.get('access_token'))
+		sp = spotipy.Spotify(auth_manager=auth_manager)
+
+		# executes if a post is sent with form data key 'saved_tracks'
 		if request.form.get('saved_tracks'):
-			auth_manager.get_access_token(session.get('access_token'))
-			sp = spotipy.Spotify(auth_manager=auth_manager)
 			
 			saved_tracks = sp.current_user_saved_tracks(limit=50, offset=0)
-
 			df = pd.DataFrame(saved_songs_cleaner(saved_tracks))
 
 			return render_template('user_data.html', data=df.to_html())
 
-
+		# if a post with form data key= 'top_tracks'
 		if request.form.get('top_tracks'):
-			auth_manager.get_access_token(session.get('access_token'))
-			sp = spotipy.Spotify(auth_manager=auth_manager)
-			
+						
 			top_tracks = sp.current_user_top_tracks(limit=50, offset=0, time_range='medium_term')
-
 			df = pd.DataFrame(top_tracks_cleaner(top_tracks))
 
 			return render_template('user_data.html', data=df.to_html())
 
-	# initial load in template
+	# initial load in template this renders essentially only renders on the first load
 	return render_template('index.html')
 
 
-
+# this route is essentially only the middleman so the page doesnt save
 @app.route('/login', methods=['POST'])
 def login_function():
 
