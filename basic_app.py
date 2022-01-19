@@ -95,6 +95,21 @@ def home():
 
 			return render_template('user_data.html', data=df.to_html())
 
+		# return your top features
+		if request.form.get('top_features'):
+
+			tracks_json = sp.current_user_top_tracks(limit=50, offset=0, time_range='short_term')
+			top_tracks_df = pd.DataFrame(top_tracks_cleaner(tracks_json))
+
+			id_list = top_tracks_df ['id'].to_list()
+			features_json = sp.audio_features(id_list)
+			features_df = pd.DataFrame(features_json)
+
+			merged = pd.merge(top_tracks_df, features_df).drop(labels=['uri', 'track_href', 'analysis_url', 'duration_ms'], axis=1)
+			summary = merged.describe()
+
+			return render_template('user_data.html', data=merged.to_html(), summary=summary.to_html())
+
 	# initial load in template this renders essentially only renders on the first load
 	return render_template('index.html')
 
