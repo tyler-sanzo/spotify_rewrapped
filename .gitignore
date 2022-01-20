@@ -130,3 +130,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# keys from spotify dashboard
+keys.py
+.DS_Store
+

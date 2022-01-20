@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Logged In</title>
+</head>
+<body>
+	<div>
+		<h1>You are Now Logged in</h1>
+		<br>
+		<form action='/' method='POST'>
+			<input type="submit" name="saved_tracks" value="saved_tracks">
+
+			<h3>What time range would you like to use?</h3>
+			<h4>
+				<input type="radio" name="time_range" id="inlineCheckbox1" value="short_term" checked> Last Few Weeks
+				<br />
+				<input type="radio" name="time_range" id="inlineCheckbox2" value="medium_term"> Last Few Months
+				<br />
+				<input type="radio" name="time_range" id="inlineCheckbox3" value="long_term"> Last Few Years
+			</h4>
+			<h3>How many top results do you want?</h3>
+			<select name="num_tracks">
+                <option value="">Select Number of Top Results</option>
+              <option value="10">Top 10</option>
+              <option value="25">Top 25</option>
+              <option value="50">Top 50</option>
+              <option value="100">Top 100</option>
+            </select>
+
+			<br /><br />
+			<input type="submit" name="top_tracks" value="top_tracks">
+			<input type="submit" name="top_features" value="top_features">
+		</form>
+	</div>
+
+</body>
+</html>
