@@ -7,7 +7,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 from keys import client_id, client_secret
 
-
+"""
 def saved_songs_cleaner(data):    
     x = []
     s = data['items']
@@ -23,6 +23,7 @@ def saved_songs_cleaner(data):
             })
 
     return x
+"""
 
 def top_tracks_cleaner(data):
 	x = []
@@ -33,6 +34,21 @@ def top_tracks_cleaner(data):
         	'song': i['name'],
             'album': i['album']['name'],
             'artists': i['artists'][0]['name'],
+            'id': i['id'],
+            'popularity': i['popularity']
+            })
+	
+	return x
+
+
+def top_artists_cleaner(data):
+	x = []
+	s = data['items']
+
+	for i in s:
+		x.append({
+        	'artist': i['name'],
+            'genres': i['genres'],
             'id': i['id'],
             'popularity': i['popularity']
             })
@@ -69,7 +85,7 @@ def home():
 
 		return render_template('logged_in.html')
 
-
+	
 	# block executes if a post is sent
 	# here is where api calls are executed
 	if request.method == 'POST':
@@ -77,6 +93,7 @@ def home():
 		auth_manager.get_access_token(session.get('access_token'))
 		sp = spotipy.Spotify(auth_manager=auth_manager)
 
+		"""
 		# executes if a post is sent with form data key 'saved_tracks'
 		if request.form.get('saved_tracks'):
 			
@@ -84,6 +101,7 @@ def home():
 			df = pd.DataFrame(saved_songs_cleaner(saved_tracks))
 
 			return render_template('user_data.html', data=df.to_html())
+		"""			
 
 		# if a post with form data key= 'top_tracks'
 		if request.form.get('top_tracks'):
@@ -99,7 +117,10 @@ def home():
 
 			data = request.form
 			tracks_json = sp.current_user_top_tracks(limit=data['num_tracks'], time_range=data['time_range'])
+			artists_json = sp.current_user_top_artists(limit=data['num_tracks'], time_range=data['time_range'])
 			top_tracks_df = pd.DataFrame(top_tracks_cleaner(tracks_json))
+			top_artists_df = pd.DataFrame(top_artists_cleaner(artists_json))
+			top_artists_df.index += 1
 
 			id_list = top_tracks_df ['id'].to_list()
 			features_json = sp.audio_features(id_list)
@@ -109,7 +130,8 @@ def home():
 			merged.index += 1
 			summary = merged.describe()
 
-			return render_template('user_data.html', data=merged.to_html(), summary=summary.to_html())
+			return render_template('user_data.html', data2=top_artists_df.to_html(), data=merged.to_html(), summary=summary.to_html())
+			#return render_template('user_data.html', data=top_artists_df.to_html(), summary=summary.to_html())
 
 	# initial load in template this renders essentially only renders on the first load
 	return render_template('index.html')
