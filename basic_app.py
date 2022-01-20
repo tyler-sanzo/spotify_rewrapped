@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 
 import pandas as pd
-import numpy as np
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -91,14 +90,15 @@ def home():
 			data = request.form			
 			top_tracks = sp.current_user_top_tracks(limit=data['num_tracks'], time_range=data['time_range'])
 			df = pd.DataFrame(top_tracks_cleaner(top_tracks))
-			df.index = np.arange(1, len(df) + 1)
+			df.index += 1
 
 			return render_template('user_data.html', data=df.to_html())
 
 		# return your top features
 		if request.form.get('top_features'):
 
-			tracks_json = sp.current_user_top_tracks(limit=50, offset=0, time_range='short_term')
+			data = request.form
+			tracks_json = sp.current_user_top_tracks(limit=data['num_tracks'], time_range=data['time_range'])
 			top_tracks_df = pd.DataFrame(top_tracks_cleaner(tracks_json))
 
 			id_list = top_tracks_df ['id'].to_list()
@@ -106,6 +106,7 @@ def home():
 			features_df = pd.DataFrame(features_json)
 
 			merged = pd.merge(top_tracks_df, features_df).drop(labels=['uri', 'track_href', 'analysis_url', 'duration_ms'], axis=1)
+			merged.index += 1
 			summary = merged.describe()
 
 			return render_template('user_data.html', data=merged.to_html(), summary=summary.to_html())
