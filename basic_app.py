@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 
 import pandas as pd
+import mpld3
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -39,6 +40,23 @@ def top_tracks_cleaner(data):
 	
 	return x
 
+def density_to_html(df, metrics=None):
+
+	# this just allows you to specify columns in the df
+	# ax is the plot object
+	if metrics:
+		ax = df[metrics].plot.density()
+	else:
+		# plot will use these columns to measure if you dont specify
+		# trying to future proof this by limitting to ints and floats inclusively between 0 and 1
+		metrics = [i for i in df.columns if (df[i].dtype in ['int64', 'float64']) and (0 <= df[i].mean() <= 1)]
+		ax = df[metrics].plot.density()
+		
+	# use .get_figure() to produce the figure element for mpld3
+	fig = ax.get_figure()
+	html = mpld3.fig_to_html(fig)
+
+	return html
 
 app = Flask(__name__)
 app.secret_key = 'wowza'
@@ -94,22 +112,31 @@ def home():
 
 			return render_template('user_data.html', data=df.to_html())
 
-		# return your top features
+		# return your top features and a matplot viz
 		if request.form.get('top_features'):
 
+			# api call to get top songs in some range, clean and set as df
 			data = request.form
 			tracks_json = sp.current_user_top_tracks(limit=data['num_tracks'], time_range=data['time_range'])
 			top_tracks_df = pd.DataFrame(top_tracks_cleaner(tracks_json))
 
+			# api call to grab the features of those songs from their IDs
 			id_list = top_tracks_df ['id'].to_list()
 			features_json = sp.audio_features(id_list)
 			features_df = pd.DataFrame(features_json)
 
+			# merge the two df on their ID
 			merged = pd.merge(top_tracks_df, features_df).drop(labels=['uri', 'track_href', 'analysis_url', 'duration_ms'], axis=1)
 			merged.index += 1
+
+			# simple pandas summary of the data
 			summary = merged.describe()
 
-			return render_template('user_data.html', data=merged.to_html(), summary=summary.to_html())
+			# making an html plot object with my function
+			plot_html = density_to_html(merged)
+
+
+			return render_template('user_data.html', data=merged.to_html(), summary=plot_html)
 
 	# initial load in template this renders essentially only renders on the first load
 	return render_template('index.html')
