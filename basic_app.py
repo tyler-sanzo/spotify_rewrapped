@@ -1,7 +1,11 @@
+
 from flask import Flask, render_template, request, redirect, session, url_for
 
 import pandas as pd
+
 import mpld3
+import matplotlib
+matplotlib.use('Agg')
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -70,7 +74,7 @@ auth_manager = SpotifyOAuth(
 	],
 	client_id=client_id,
 	client_secret=client_secret,
-	redirect_uri="http://localhost:8888/",
+	redirect_uri="http://127.0.0.1:5000",
 	show_dialog=True
 	)
 
@@ -141,7 +145,6 @@ def home():
 	# initial load in template this renders essentially only renders on the first load
 	return render_template('index.html')
 
-
 # this route is essentially only the middleman so the page doesnt save
 @app.route('/login', methods=['POST'])
 def login_function():
@@ -152,4 +155,4 @@ def login_function():
 
 
 if __name__ == '__main__':
-	app.run(debug=True, port=8888)
+	app.run(debug=True, port=5000)
