@@ -45,6 +45,20 @@ def top_tracks_cleaner(data):
 	
 	return x
 
+def top_artists_cleaner(data):
+	x = []
+	s = data['items']
+
+	for i in s:
+		x.append({
+        	'artist': i['name'],
+            'genres': i['genres'],
+            'id': i['id'],
+            'popularity': i['popularity']
+            })
+	
+	return x
+
 def density_to_html(df, metrics=None):
 
 	# this just allows you to specify columns in the df
@@ -74,7 +88,7 @@ auth_manager = SpotifyOAuth(
 	],
 	client_id=client_id,
 	client_secret=client_secret,
-	redirect_uri=f"http://localhost:{port}/",
+	redirect_uri=f"http://127.0.0.1:{port}",
 	show_dialog=True
 	)
 
@@ -124,6 +138,11 @@ def home():
 			tracks_json = sp.current_user_top_tracks(limit=data['num_tracks'], time_range=data['time_range'])
 			top_tracks_df = pd.DataFrame(top_tracks_cleaner(tracks_json))
 
+			# api call to get top artists in some range, clean and set as df
+			artists_json = sp.current_user_top_artists(limit=data['num_tracks'], time_range=data['time_range'])
+			top_artists_df = pd.DataFrame(top_artists_cleaner(artists_json))
+			top_artists_df.index += 1
+
 			# api call to grab the features of those songs from their IDs
 			id_list = top_tracks_df['id'].to_list()
 			features_json = sp.audio_features(id_list)
@@ -151,7 +170,19 @@ def home():
 				}
 				top_ten.append(d)
 
-			return render_template('user_data.html', data=top_ten, summary=plot_html)
+			
+			# this gets top 10 artists assets for sean
+			top_ten_artists = []
+			for i in range(10):
+				d = {
+				'artist': artists_json['items'][i]['name'],
+				'genres': artists_json['items'][i]['genres'],
+				'artist_art': artists_json['items'][i]['images'][0]['url']
+				}
+				top_ten_artists.append(d)
+			
+
+			return render_template('user_data.html', data=top_ten, data2=top_ten_artists, summary=plot_html)
 
 	# initial load in template this renders essentially only renders on the first load
 	return render_template('index.html')
