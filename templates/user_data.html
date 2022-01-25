@@ -7,7 +7,13 @@
 </head>
 <body>
 	<div>
-		<a href='/'>Home</a>
+		<button onclick="goBack()">Go Back</button>
+<script>
+function goBack() {
+  window.history.back();
+}
+</script>
+
 		<h1>Audio Features Distributions</h1>
 		{{ summary|safe }}
 		<h1>Data</h1>
