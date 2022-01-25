@@ -17,7 +17,16 @@ function goBack() {
 		<h1>Audio Features Distributions</h1>
 		{{ summary|safe }}
 		<h1>Data</h1>
-		{{ data|safe }}
+		<table>
+		{% for i in data %}
+			{% for key, value in i.items() %}
+				<tr>
+					<th> {{ key }} </th>
+					<td> {{ value }} </td>
+				</tr>
+			{% endfor %}
+		{% endfor %}
+		</table>
 	</div>
 </body>
 <script>
