@@ -65,7 +65,6 @@ app.secret_key = 'wowza'
 auth_manager = SpotifyOAuth(
 	scope=['user-top-read',
 	'user-read-recently-played',
-	'user-library-read',
 	'user-library-read'
 	],
 	client_id=client_id,
