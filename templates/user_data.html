@@ -7,16 +7,19 @@
 </head>
 <body>
 	<div>
-		<a href='/'>Home</a>
-		<br>
-		<h1>Here's Your Artist Data</h1>
-		{{ data2|safe }}
-		<br>
-		<h1>Here's Your Track Data</h1>
-		{{ data|safe }}
-		<br>
-		<h2>Now Here's More</h2>
+		<button onclick="goBack()">Go Back</button>
+<script>
+function goBack() {
+  window.history.back();
+}
+</script>
+
+		<h1>Audio Features Distributions</h1>
 		{{ summary|safe }}
+		<h1>Top Tracks Data</h1>
+		{{ data|safe }}
+		<h1>Top Artists Data</h1>
+		{{ data2|safe }}
 	</div>
 </body>
 <script>
