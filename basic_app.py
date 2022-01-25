@@ -12,6 +12,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 from keys import client_id, client_secret
 
+port = 5000
 
 def saved_songs_cleaner(data):    
     x = []
@@ -73,7 +74,7 @@ auth_manager = SpotifyOAuth(
 	],
 	client_id=client_id,
 	client_secret=client_secret,
-	redirect_uri="http://127.0.0.1:5000",
+	redirect_uri=f"http://localhost:{port}/",
 	show_dialog=True
 	)
 
@@ -124,7 +125,7 @@ def home():
 			top_tracks_df = pd.DataFrame(top_tracks_cleaner(tracks_json))
 
 			# api call to grab the features of those songs from their IDs
-			id_list = top_tracks_df ['id'].to_list()
+			id_list = top_tracks_df['id'].to_list()
 			features_json = sp.audio_features(id_list)
 			features_df = pd.DataFrame(features_json)
 
@@ -139,7 +140,18 @@ def home():
 			plot_html = density_to_html(merged)
 
 
-			return render_template('user_data.html', data=merged.to_html(), summary=plot_html)
+			# this gets assets for sean
+			top_ten = []
+			for i in range(10):
+				d = {
+				'album_art': tracks_json['items'][i]['album']['images'][0]['url'],
+				'album_name': tracks_json['items'][i]['album']['name'],
+				'artist': tracks_json['items'][i]['artists'][0]['name'],
+				'song': tracks_json['items'][i]['name']
+				}
+				top_ten.append(d)
+
+			return render_template('user_data.html', data=top_ten, summary=plot_html)
 
 	# initial load in template this renders essentially only renders on the first load
 	return render_template('index.html')
@@ -154,4 +166,4 @@ def login_function():
 
 
 if __name__ == '__main__':
-	app.run(debug=True, port=5000)
+	app.run(debug=True, port=port)
