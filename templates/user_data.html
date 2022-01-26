@@ -4,29 +4,96 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>User Data</title>
+
+	<!-- css styling taken from w3 schools templates -->
+	<style>
+		* {
+		  box-sizing: border-box;
+		}
+
+		body {
+		  font-family: Arial, Helvetica, sans-serif;
+		}
+
+		/* Style the header */
+		.header {
+		  background-color: #f1f1f1;
+		  padding: 30px;
+		  text-align: center;
+		  font-size: 35px;
+		}
+
+		/* Create three equal columns that floats next to each other */
+		.column_1 {
+		  float: left;
+		  width: 33.33%;
+		  padding: 10px;
+		  background-color: #f0f0f0;
+		}
+
+		.column_2 {
+		  float: left;
+		  width: 66.66%;
+		  padding: 10px;
+		}
+
+		/* Clear floats after the columns */
+		.row:after {
+		  content: "";
+		  display: table;
+		  clear: both;
+		}
+
+		/* Style the footer */
+		.footer {
+		  background-color: #f1f1f1;
+		  padding: 10px;
+		  text-align: center;
+		}
+
+		/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+		@media (max-width: 600px) {
+		  .column {
+		    width: 100%;
+		  }
+		}
+
+		.song_info {
+
+		}
+
+		.album_art {
+			border-radius: 15px;
+		}
+	</style>
 </head>
+
 <body>
 	<div>
 		<button onclick="goBack()">Go Back</button>
-<script>
-function goBack() {
-  window.history.back();
-}
-</script>
+		
+		<script>
+		function goBack() {
+		  window.history.back();
+		}
+		</script>
+		<div class='header'>
+			<h1>[User] Top Tracks and Data</h1>
+		</div>
 
-		<h1>Audio Features Distributions</h1>
-		{{ summary|safe }}
-		<h1>Data</h1>
-		<table>
-		{% for i in data %}
-			{% for key, value in i.items() %}
-				<tr>
-					<th> {{ key }} </th>
-					<td> {{ value }} </td>
-				</tr>
-			{% endfor %}
-		{% endfor %}
-		</table>
+		<div class='row'>
+			
+			<div class='column_1'>
+				{{ top_ten | safe }}
+			</div>
+
+
+			<div class='column_2'>
+				<h2>Audio Features Distributions</h2>
+				{{ summary|safe }}
+			</div>
+			
+		</div>
 	</div>
 </body>
 <script>

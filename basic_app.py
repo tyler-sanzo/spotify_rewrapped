@@ -11,6 +11,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 from keys import client_id, client_secret
+from assets import song_table
 
 port = 5000
 
@@ -143,15 +144,14 @@ def home():
 			# this gets assets for sean
 			top_ten = []
 			for i in range(10):
-				d = {
-				'album_art': tracks_json['items'][i]['album']['images'][0]['url'],
-				'album_name': tracks_json['items'][i]['album']['name'],
-				'artist': tracks_json['items'][i]['artists'][0]['name'],
+				top_ten.append({
+				'img': tracks_json['items'][i]['album']['images'][0]['url'],
+				'album': tracks_json['items'][i]['album']['name'],
+				'artist': [artist['name'] for artist in tracks_json['items'][i]['artists']],
 				'song': tracks_json['items'][i]['name']
-				}
-				top_ten.append(d)
+				})
 
-			return render_template('user_data.html', data=top_ten, summary=plot_html)
+			return render_template('user_data.html', top_ten=song_table(top_ten), summary=plot_html)
 
 	# initial load in template this renders essentially only renders on the first load
 	return render_template('index.html')
