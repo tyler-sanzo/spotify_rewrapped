@@ -157,8 +157,9 @@ def home():
 			for feature in histogrammable_features:
 				song_feature_series = merged[feature]
 
-				axes = song_feature_series.plot.hist()
-				fig = axes.get_figure()
+				ax = song_feature_series.plot.hist(figsize=(2, 2))
+
+				fig = ax.get_figure()
 
 				# using mpld3 library to save as an html svg
 				histogram_svg_elements[feature] = mpld3.fig_to_html(fig)
