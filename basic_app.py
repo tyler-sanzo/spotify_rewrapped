@@ -46,23 +46,23 @@ def top_tracks_cleaner(data):
 	
 	return x
 
-def density_to_html(df, metrics=None):
+# def density_to_html(df, metrics=None):
 
-	# this just allows you to specify columns in the df
-	# ax is the plot object
-	if metrics:
-		ax = df[metrics].plot.density()
-	else:
-		# plot will use these columns to measure if you dont specify
-		# trying to future proof this by limitting to ints and floats inclusively between 0 and 1
-		metrics = [i for i in df.columns if (df[i].dtype in ['int64', 'float64']) and (0 <= df[i].mean() <= 1)]
-		ax = df[metrics].plot.density()
+# 	# this just allows you to specify columns in the df
+# 	# ax is the plot object
+# 	if metrics:
+# 		ax = df[metrics].plot.density()
+# 	else:
+# 		# plot will use these columns to measure if you dont specify
+# 		# trying to future proof this by limitting to ints and floats inclusively between 0 and 1
+# 		metrics = [i for i in df.columns if (df[i].dtype in ['int64', 'float64']) and (0 <= df[i].mean() <= 1)]
+# 		ax = df[metrics].plot.density()
 		
-	# use .get_figure() to produce the figure element for mpld3
-	fig = ax.get_figure()
-	html = mpld3.fig_to_html(fig)
+# 	# use .get_figure() to produce the figure element for mpld3
+# 	fig = ax.get_figure()
+# 	html = mpld3.fig_to_html(fig)
 
-	return html
+# 	return html
 
 app = Flask(__name__)
 app.secret_key = 'wowza'
@@ -134,14 +134,40 @@ def home():
 			merged = pd.merge(top_tracks_df, features_df).drop(labels=['uri', 'track_href', 'analysis_url', 'duration_ms'], axis=1)
 			merged.index += 1
 
-			# simple pandas summary of the data
-			summary = merged.describe()
+			
 
-			# making an html plot object with my function
-			plot_html = density_to_html(merged)
+			'''# plot will use these columns to measure if you dont specify
+												# trying to future proof this by limitting to ints and floats inclusively between 0 and 1
+												df = merged.copy()
+												metrics = [i for i in df.columns if (
+													(df[i].dtype in ['int64', 'float64']) and
+													(0 <= df[i].mean() <= 1))]
+												
+												ax = df[metrics].plot.density()
+												
+												# use .get_figure() to produce the figure element for mpld3
+												fig = ax.get_figure()
+												features_density_html = mpld3.fig_to_html(fig)'''
 
 
-			# this gets assets for sean
+
+			# plotting each feature / saving the svg in a dictionary
+			histogram_svg_elements = {}
+			histogrammable_features = ['popularity', 'key', 'loudness', 'tempo']
+			for feature in histogrammable_features:
+				song_feature_series = merged[feature]
+
+				axes = song_feature_series.plot.hist()
+				fig = axes.get_figure()
+
+				# using mpld3 library to save as an html svg
+				histogram_svg_elements[feature] = mpld3.fig_to_html(fig)
+				matplotlib.pyplot.clf()
+
+
+
+
+			# takes key info from top_tracks call to pass to webpage
 			top_ten = []
 			for i in range(10):
 				top_ten.append({
@@ -151,7 +177,10 @@ def home():
 				'song': tracks_json['items'][i]['name']
 				})
 
-			return render_template('user_data.html', top_ten=song_table(top_ten), summary=plot_html)
+			return render_template('user_data.html',
+				top_ten=song_table(top_ten),
+				plots=histogram_svg_elements
+				)
 
 	# initial load in template this renders essentially only renders on the first load
 	return render_template('index.html')

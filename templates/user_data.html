@@ -91,7 +91,20 @@
 
 			<div class='column_2'>
 				<h2>Audio Features Distributions</h2>
-				{{ summary|safe }}
+
+				<div class='plots_list'>
+				{% for name, svg in plots.items() %}
+					<li>
+						<div class='plot_box'>
+						{{ svg | safe }}
+							<div class='plot_text'>
+								<p>{{ name.capitalize() }}</p>
+							</div>
+						</div>
+					</li>
+				{% endfor %}
+				</div>
+				
 			</div>
 			
 		</div>
