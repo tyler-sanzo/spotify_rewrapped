@@ -9,6 +9,10 @@ def song_table(data: list):
 
 			<li>
 				<div class='list_item'>
+				
+					<img src={d['img']} alt='number {index + 1} song: {d['song']}' class='album_art' style="width: 10rem; height: 10rem;">
+
+					<br>
 					
 					<div class='song_info'>
 						<div class='song_name'>
@@ -22,10 +26,9 @@ def song_table(data: list):
 						</div>
 					</div>
 
-					<img src={d['img']} alt='number {index + 1} song: {d['song']}' class='album_art' style="width: 10rem; height: 10rem;">
-
 				</div>
 			</li>
+			<br>
 
 			'''
 			)
