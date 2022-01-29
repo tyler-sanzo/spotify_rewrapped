@@ -2,7 +2,7 @@
 
 body {
     font-family: 'Raleway', sans-serif;
-    background-image: url('/static/tile_background.png')
+
 }
 
 h1 {
@@ -16,4 +16,116 @@ p {
 b {
     font-family: 'Raleway', sans-serif;
     font-weight:900;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.background {
+    background-image: url('/static/tile_background.png')
+}
+
+/* Style the header */
+.header {
+  background-color: #f1f1f1;
+  padding: 30px;
+  text-align: center;
+  font-size: 35px;
+
+}
+
+/* Create three equal columns that floats next to each other */
+.column_1 {
+  float: left;
+  width: 33.33%;
+  padding: 10px;
+  background-color: #f0f0f0;
+  padding-left: 40px;
+  height:100%;
+}
+
+.column_2 {
+  float: left;
+  width: 66.66%;
+  padding: 10px;
+
+}
+
+.column_3 {
+  float: left;
+  width: 60%;
+  padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style the footer */
+.footer {
+  background-color: #f1f1f1;
+  padding: 10px;
+  text-align: center;
+}
+
+.list_item {
+  width: 250px;
+  float:left;
+  height: 250px;
+  text-align: center;
+}
+
+.plot_text {
+  text-align: center;
+  width:440px;
+}
+
+
+.popularity {
+  width:300px;
+  float:left;
+  margin-right: 100px;
+}
+
+.key {
+  width:300px;
+  float:left;
+    margin-right: 100px;
+}
+
+.loudness {
+  width:300px;
+  float:left;
+  margin-right: 100px;
+}
+
+.tempo {
+  width:300px;
+  float:left;
+    margin-right: 100px;
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media (max-width: 600px) {
+  .column {
+    width: 100%;
+  }
+}
+
+.song_info {
+  text-align: center, !important;
+}
+
+.album_art {
+  border-radius: 15px;
+  box-shadow: 5px 5px 2.5px 2.5px rgba(0, 0, 0, 0.2);
+  margin-bottom:10px;
 }
