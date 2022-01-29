@@ -103,7 +103,6 @@ def user_data():
 		merged = pd.merge(df, features_df).drop(labels=['uri', 'track_href', 'analysis_url', 'duration_ms'], axis=1)
 
 
-
 		# plotting each feature / saving the svg in a dictionary
 		sns.set_style('dark')
 		sns.set_context("paper")
@@ -121,6 +120,9 @@ def user_data():
 			# using mpld3 library to save as an html svg
 			histogram_svg_elements[feature] = mpld3.fig_to_html(fig)
 			matplotlib.pyplot.clf()
+
+
+		features = merged[['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']]
 
 
 
