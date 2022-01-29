@@ -1,15 +1,20 @@
 
 from flask import Flask, render_template, request, redirect, session, url_for
 
+# python modules for data manipulation and visualization
 import pandas as pd
-
 import mpld3
+import seaborn as sns
 import matplotlib
+
+# this fixes the problem with threading in matplotlib
 matplotlib.use('Agg')
 
+# spotify api authorization and call handling library
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+# local python files
 from keys import client_id, client_secret
 from assets import song_table
 
@@ -39,9 +44,10 @@ def top_tracks_cleaner(data):
 		x.append({
         	'song': i['name'],
             'album': i['album']['name'],
-            'artists': i['artists'][0]['name'],
+            'artists': [artist['name'] for artist in i['artists']],
             'id': i['id'],
-            'popularity': i['popularity']
+            'popularity': i['popularity'],
+            'img': i['album']['images'][0]['url']
             })
 	
 	return x
@@ -100,39 +106,58 @@ def home():
 		auth_manager.get_access_token(session.get('access_token'))
 		sp = spotipy.Spotify(auth_manager=auth_manager)
 
-		# executes if a post is sent with form data key 'saved_tracks'
-		if request.form.get('saved_tracks'):
+
+
+
+		# # executes if a post is sent with form data key 'saved_tracks'
+		# if request.form.get('saved_tracks'):
 			
-			saved_tracks = sp.current_user_saved_tracks(limit=50, offset=0)
-			df = pd.DataFrame(saved_songs_cleaner(saved_tracks))
+		# 	saved_tracks = sp.current_user_saved_tracks(limit=50, offset=0)
+		# 	df = pd.DataFrame(saved_songs_cleaner(saved_tracks))
 
-			return render_template('user_data.html', data=df.to_html())
+		# 	return render_template('user_data.html', data=df.to_html())
 
-		# if a post with form data key= 'top_tracks'
-		if request.form.get('top_tracks'):
-			data = request.form			
-			top_tracks = sp.current_user_top_tracks(limit=data['num_tracks'], time_range=data['time_range'])
-			df = pd.DataFrame(top_tracks_cleaner(top_tracks))
-			df.index += 1
+		# # if a post with form data key= 'top_tracks'
+		# if request.form.get('top_tracks'):
+		# 	data = request.form			
+		# 	top_tracks = sp.current_user_top_tracks(limit=data['num_tracks'], time_range=data['time_range'])
+		# 	df = pd.DataFrame(top_tracks_cleaner(top_tracks))
+		# 	df.index += 1
 
-			return render_template('user_data.html', data=df.to_html())
+		# 	return render_template('user_data.html', data=df.to_html())
+
+
+
 
 		# return your top features and a matplot viz
 		if request.form.get('top_features'):
 
 			# api call to get top songs in some range, clean and set as df
 			data = request.form
-			tracks_json = sp.current_user_top_tracks(limit=data['num_tracks'], time_range=data['time_range'])
-			top_tracks_df = pd.DataFrame(top_tracks_cleaner(tracks_json))
+
+
+
+			top_short_json = sp.current_user_top_tracks(limit=50, time_range='short_term')
+			top_mid_json = sp.current_user_top_tracks(limit=50, time_range='medium_term')
+			top_long_json = sp.current_user_top_tracks(limit=50, time_range='long_term')
+
+
+			top_short_df = pd.DataFrame(top_tracks_cleaner(top_short_json))
+			top_mid_df = pd.DataFrame(top_tracks_cleaner(top_mid_json))
+			top_long_df = pd.DataFrame(top_tracks_cleaner(top_long_json))
+
+
+			df = top_short_df.copy()	# TODO: change later when we figure out how to decide which to use
+
 
 			# api call to grab the features of those songs from their IDs
-			id_list = top_tracks_df['id'].to_list()
+			id_list = df['id'].to_list()
 			features_json = sp.audio_features(id_list)
 			features_df = pd.DataFrame(features_json)
 
 			# merge the two df on their ID
-			merged = pd.merge(top_tracks_df, features_df).drop(labels=['uri', 'track_href', 'analysis_url', 'duration_ms'], axis=1)
-			merged.index += 1
+			merged = pd.merge(df, features_df).drop(labels=['uri', 'track_href', 'analysis_url', 'duration_ms'], axis=1)
+			# merged.index += 1
 
 			
 
@@ -152,14 +177,19 @@ def home():
 
 
 			# plotting each feature / saving the svg in a dictionary
+			sns.set_style('dark')
+			sns.set_context("paper")
+
+			
+
 			histogram_svg_elements = {}
 			histogrammable_features = ['popularity', 'key', 'loudness', 'tempo']
 			for feature in histogrammable_features:
 				song_feature_series = merged[feature]
 
-				ax = song_feature_series.plot.hist(figsize=(2, 2))
 
-				fig = ax.get_figure()
+				fig = sns.displot(data=song_feature_series, kde=True, height=4, aspect=1).set(ylabel=None, xlabel=None).fig
+
 
 				# using mpld3 library to save as an html svg
 				histogram_svg_elements[feature] = mpld3.fig_to_html(fig)
@@ -168,19 +198,19 @@ def home():
 
 
 
-			# takes key info from top_tracks call to pass to webpage
-			top_ten = []
-			for i in range(10):
-				top_ten.append({
-				'img': tracks_json['items'][i]['album']['images'][0]['url'],
-				'album': tracks_json['items'][i]['album']['name'],
-				'artist': [artist['name'] for artist in tracks_json['items'][i]['artists']],
-				'song': tracks_json['items'][i]['name']
-				})
+			# # takes key info from top_tracks call to pass to webpage
+			# top_ten = []
+			# for i in range(10):
+			# 	top_ten.append({
+			# 	'img': tracks_json['items'][i]['album']['images'][0]['url'],
+			# 	'album': tracks_json['items'][i]['album']['name'],
+			# 	'artist': [artist['name'] for artist in tracks_json['items'][i]['artists']],
+			# 	'song': tracks_json['items'][i]['name']
+			# 	})
 
 			return render_template('user_data.html',
-				top_ten=song_table(top_ten),
-				plots=histogram_svg_elements
+				plots=histogram_svg_elements,
+				data=merged
 				)
 
 	# initial load in template this renders essentially only renders on the first load

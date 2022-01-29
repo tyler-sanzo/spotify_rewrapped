@@ -9,6 +9,7 @@ spotipy = "*"
 pandas = "*"
 mpld3 = "*"
 scipy = "*"
+seaborn = "*"
 
 [dev-packages]
 

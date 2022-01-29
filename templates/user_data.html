@@ -33,8 +33,14 @@
 
 		.column_2 {
 		  float: left;
-		  width: 66.66%;
+		  width: 33.33%;
 		  padding: 10px;
+		}
+
+		.column_3 {
+			float: left;
+			width: 33.33%;
+			padding: 10px;
 		}
 
 		/* Clear floats after the columns */
@@ -78,14 +84,44 @@
 		  window.history.back();
 		}
 		</script>
+
 		<div class='header'>
 			<h1>[User] Top Tracks and Data</h1>
 		</div>
 
+
 		<div class='row'>
 
 			<div class='column_1'>
-				{{ top_ten | safe }}
+				<ol class='top_tracks_list'>
+					{% for index, row in data.head(10).iterrows() %}
+
+					<li>
+						<div class='list_item'>
+				
+							<img src='{{ row["img"] }}' alt='number {{ index +1 }} song: {{ row["song"] }}' class='album_art' style="width: 10rem; height: 10rem;">
+
+							<br>
+
+							<div class='song_info'>
+								<div class='song_name'>
+									<span><b>{{ row["song"] }}</b><span>
+								</div>
+								<div class='artist_name'>
+									<span>{{ ', '.join(row["artist"]) }}<span>
+								</div>
+								<div class='album_name'>
+									<span>{{ row["album"] }}</span>
+								</div>
+							</div>
+
+						</div>
+					</li>
+					<br>
+					
+					{% endfor %}
+				</ol>
+					}
 			</div>
 
 
@@ -95,7 +131,7 @@
 				<div class='plots_list'>
 				{% for name, svg in plots.items() %}
 					<li>
-						<div class='plot_box'>
+						<div class='{{ name }}'>
 						{{ svg | safe }}
 							<div class='plot_text'>
 								<p>{{ name.capitalize() }}</p>
@@ -106,6 +142,10 @@
 				</div>
 				
 			</div>
+
+			<div class='column_3'>
+
+			</div>	
 			
 		</div>
 	</div>
