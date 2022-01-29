@@ -36,6 +36,40 @@ def top_tracks_cleaner(data):
 	
 	return x
 
+<<<<<<< HEAD
+=======
+def top_artists_cleaner(data):
+	x = []
+	s = data['items']
+
+	for i in s:
+		x.append({
+        	'artist': i['name'],
+            'genres': i['genres'],
+            'id': i['id'],
+            'popularity': i['popularity']
+            })
+	
+	return x
+
+def density_to_html(df, metrics=None):
+
+	# this just allows you to specify columns in the df
+	# ax is the plot object
+	if metrics:
+		ax = df[metrics].plot.density()
+	else:
+		# plot will use these columns to measure if you dont specify
+		# trying to future proof this by limitting to ints and floats inclusively between 0 and 1
+		metrics = [i for i in df.columns if (df[i].dtype in ['int64', 'float64']) and (0 <= df[i].mean() <= 1)]
+		ax = df[metrics].plot.density()
+		
+	# use .get_figure() to produce the figure element for mpld3
+	fig = ax.get_figure()
+	html = mpld3.fig_to_html(fig)
+
+	return html
+>>>>>>> 97458212a3636c2928280712d9757c62f19b573c
 
 app = Flask(__name__)
 app.secret_key = 'wowza'
@@ -48,7 +82,7 @@ auth_manager = SpotifyOAuth(
 	],
 	client_id=client_id,
 	client_secret=client_secret,
-	redirect_uri=f"http://localhost:{port}/",
+	redirect_uri=f"http://127.0.0.1:{port}",
 	show_dialog=True
 	)
 
@@ -92,8 +126,20 @@ def user_data():
 				sp.current_user_top_tracks(limit=50, time_range=time_range)))
 
 
+<<<<<<< HEAD
 		# saving IDs for future calls
 		id_list = df['id'].to_list()
+=======
+			# api call to get top artists in some range, clean and set as df
+			artists_json = sp.current_user_top_artists(limit=data['num_tracks'], time_range=data['time_range'])
+			top_artists_df = pd.DataFrame(top_artists_cleaner(artists_json))
+			top_artists_df.index += 1
+
+			# api call to grab the features of those songs from their IDs
+			id_list = top_tracks_df['id'].to_list()
+			features_json = sp.audio_features(id_list)
+			features_df = pd.DataFrame(features_json)
+>>>>>>> 97458212a3636c2928280712d9757c62f19b573c
 
 		# api call to grab the features of those songs from their IDs
 		features_json = sp.audio_features(id_list)
@@ -131,6 +177,22 @@ def user_data():
 	# if neither condition is met
 	return '<a href="/">Home</a>'
 
+<<<<<<< HEAD
+=======
+			
+			# this gets top 10 artists assets for sean
+			top_ten_artists = []
+			for i in range(10):
+				d = {
+				'artist': artists_json['items'][i]['name'],
+				'genres': artists_json['items'][i]['genres'],
+				'artist_art': artists_json['items'][i]['images'][0]['url']
+				}
+				top_ten_artists.append(d)
+			
+
+			return render_template('user_data.html', data=top_ten, data2=top_ten_artists, summary=plot_html)
+>>>>>>> 97458212a3636c2928280712d9757c62f19b573c
 
 
 # this route is essentially only the middleman so the page doesnt save
