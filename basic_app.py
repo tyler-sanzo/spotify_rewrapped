@@ -16,25 +16,9 @@ from spotipy.oauth2 import SpotifyOAuth
 
 # local python files
 from keys import client_id, client_secret
-from assets import song_table
 
 port = 5000
 
-def saved_songs_cleaner(data):    
-    x = []
-    s = data['items']
-
-    for i in s:
-        x.append({
-            'added_at': i['added_at'],
-            'song': i['track']['name'],
-            'album': i['track']['album']['name'],
-            'artists': i['track']['artists'][0]['name'],
-            'id': i['track']['id'],
-            'popularity': i['track']['popularity']
-            })
-
-    return x
 
 def top_tracks_cleaner(data):
 	x = []
@@ -52,23 +36,6 @@ def top_tracks_cleaner(data):
 	
 	return x
 
-# def density_to_html(df, metrics=None):
-
-# 	# this just allows you to specify columns in the df
-# 	# ax is the plot object
-# 	if metrics:
-# 		ax = df[metrics].plot.density()
-# 	else:
-# 		# plot will use these columns to measure if you dont specify
-# 		# trying to future proof this by limitting to ints and floats inclusively between 0 and 1
-# 		metrics = [i for i in df.columns if (df[i].dtype in ['int64', 'float64']) and (0 <= df[i].mean() <= 1)]
-# 		ax = df[metrics].plot.density()
-		
-# 	# use .get_figure() to produce the figure element for mpld3
-# 	fig = ax.get_figure()
-# 	html = mpld3.fig_to_html(fig)
-
-# 	return html
 
 app = Flask(__name__)
 app.secret_key = 'wowza'
