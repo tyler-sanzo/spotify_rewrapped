@@ -15,9 +15,6 @@
 
 <body>
 	<div>
-
-
-
 		<div class='header'>
 			<h1>[User] Top Tracks and Data</h1>
 			<div>
@@ -27,21 +24,16 @@
 				<a type="button" class="btn btn-success" href='/'>Home</a>
 			</div>
 		</div>
-
-
+	</div>
+	<div class='container'>
 		<div class='row'>
-
-			<div class='column_1'>
+			<div class='col-1'></div>
+			<div class='col-10 justify-content-center'>
 				<ol class='top_tracks_list'>
 					{% for index, row in data.head(10).iterrows() %}
-
-
 						<div class='list_item'>
 							<li>
-								<img src='{{ row["img"] }}' alt='number {{ index +1 }} song: {{ row["song"] }}' class='album_art' style="width: 10rem; height: 10rem;">
-
-
-
+								<img class='img-responsive' src='{{ row["img"] }}' alt='number {{ index +1 }} song: {{ row["song"] }}' class='album_art' style="width: 10rem; height: 10rem;">
 								<div class='song_info'>
 									<div class='song_name'>
 										<span><b>{{ row["song"] }}</b><span>
@@ -55,42 +47,28 @@
 								</div>
 							</li>
 						</div>
-
 					{% endfor %}
 				</ol>
 			</div>
-
-
-			<div class='column_2'>
-				<h2 style="text-align:center">Audio Features Distributions</h2>
-<br>
-<br>
+		</div>
+		<div class='row align-items-center'>
+			<div class='col-1'></div>
+			<div class='col-10'>
+				<br>
+				<br>
 				<div class='plots_list'>
+					<h2 style="text-align:center">Audio Features Distributions</h2>
 				{% for name, svg in plots.items() %}
-
 						<div class='{{ name }}'>
-
 							<div class='plot_text'>
 								<p>{{ name.capitalize() }}</p>
 							</div>
 								{{ svg | safe }}
 						</div>
-
 				{% endfor %}
 				</div>
-
 			</div>
-
-			<div class='column_3'>
-
-			</div>
-
 		</div>
-
 	</div>
 </body>
-<script>
-	var data = document.getElementById("json_me");
-	console.log(data);
-</script>
 </html>
