@@ -45,8 +45,9 @@ def top_artists_cleaner(data):
         	'artist': i['name'],
             'genres': i['genres'],
             'id': i['id'],
-            'popularity': i['popularity']
-            })
+            'popularity': i['popularity'],
+            'images': i['images'][0]['url']
+			})
 	
 	return x
 
@@ -91,11 +92,11 @@ def user_data():
 
 
 	if not request.args.get('time_range'):
-		return redirect('/user_data?time_range=short_term')
+		return redirect('/user_data?time_range=short_term&search=tracks')
 
 
-	# return your top features and a matplot viz
-	if request.args.get('time_range'):
+	# return your top tracks and a matplot viz
+	if request.args.get('search') == 'tracks':
 
 		# api call to get top songs in some range, clean and set as df
 		time_range = request.args['time_range']
@@ -108,14 +109,6 @@ def user_data():
 
 		# saving IDs for future calls
 		id_list = df['id'].to_list()
-
-
-
-		# api call to get top artists
-		artists_json = sp.current_user_top_artists(limit=50, time_range=time_range)
-		top_artists_df = pd.DataFrame(top_artists_cleaner(artists_json))
-
-
 
 		# api call to grab the features of those songs from their IDs
 		features_json = sp.audio_features(id_list)
@@ -146,9 +139,28 @@ def user_data():
 
 		features = merged[['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']]
 
+		return render_template('user_data.html', plots=histogram_svg_elements, data=merged, data2=time_range)
+
+	
+	#return your top artists
+	if request.args.get('search') == 'artists':
+
+		# api call to get top songs in some range, clean and set as df
+		time_range = request.args['time_range']
+
+		# calling for the user data and simultaneously cleaning/framing
+		df = pd.DataFrame(
+			top_artists_cleaner(
+				sp.current_user_top_artists(limit=50, time_range=time_range)))
 
 
-		return render_template('user_data.html', plots=histogram_svg_elements, data=merged)
+		# saving IDs for future calls
+		id_list = df['id'].to_list()
+
+		return render_template('user_data_artists.html', data=df, data2=time_range)
+
+
+
 
 	# if neither condition is met
 	return '<a href="/">Home</a>'

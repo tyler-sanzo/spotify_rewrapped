@@ -19,7 +19,7 @@
 
 
 		<div class='header'>
-			<h1>[User] Top Tracks and Data</h1>
+			<h1>[User] Top Artists and Data</h1>
 			{% if data2 == 'short_term' %}
 				<h2>Last Month</h2>
 			{% elif data2 == 'medium_term' %}
@@ -28,11 +28,11 @@
 				<h2>All Time</h2>	
 			{% endif %}
 			<div>
-				<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=tracks'>Last Month</a>
-				<a type="button" class="btn btn-success" href='/user_data?time_range=medium_term&search=tracks'>Last 6 Months</a>
-				<a type="button" class="btn btn-success" href='/user_data?time_range=long_term&search=tracks'>All Time</a>
+				<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=artists'>Last Month</a>
+				<a type="button" class="btn btn-success" href='/user_data?time_range=medium_term&search=artists'>Last 6 Months</a>
+				<a type="button" class="btn btn-success" href='/user_data?time_range=long_term&search=artists'>All Time</a>
 				<a type="button" class="btn btn-success" href='/'>Home</a>
-				<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=artists'>Top Artists</a>
+				<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=tracks'>Top Tracks</a>
 			</div>
 		</div>
 
@@ -46,19 +46,13 @@
 
 						<div class='list_item'>
 							<li>
-								<img src='{{ row["img"] }}' alt='number {{ index +1 }} song: {{ row["song"] }}' class='album_art' style="width: 10rem; height: 10rem;">
+								<img src='{{ row["images"] }}' alt='number {{ index +1 }} artist: {{ row["artist"] }}' class='album_art' style="width: 10rem; height: 10rem;">
 
 
 
 								<div class='song_info'>
-									<div class='song_name'>
-										<span><b>{{ row["song"] }}</b><span>
-									</div>
 									<div class='artist_name'>
-										<span>{{ ', '.join(row["artist"]) }}<span>
-									</div>
-									<div class='album_name'>
-										<span>{{ row["album"] }}</span>
+										<span><b>{{ row["artist"] }}</b><span>
 									</div>
 								</div>
 							</li>
@@ -70,21 +64,12 @@
 
 
 			<div class='column_2'>
-				<h2 style="text-align:center">Audio Features Distributions</h2>
+				<h2 style="text-align:center">Genre Plots Go Here</h2>
 <br>
 <br>
+
 				<div class='plots_list'>
-				{% for name, svg in plots.items() %}
-
-						<div class='{{ name }}'>
-
-							<div class='plot_text'>
-								<p>{{ name.capitalize() }}</p>
-							</div>
-								{{ svg | safe }}
-						</div>
-
-				{% endfor %}
+				
 				</div>
 
 			</div>
