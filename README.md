@@ -7,10 +7,10 @@
 This web application displays a user’s top tracks and artists in the past month, 6 months, and all time, along with visualizations of their listening data.
 
 ## Contributors
-[Tyler Sanzo](https://github.com/tyler-sanzo) - Project Manager
-[Chris Garcia](https://github.com/chrisagarcia) - Lead Developer
-[Alex Huynh](https://github.com/alexhuynh0530) - Backend Developer
-[Sean Draper](https://github.com/SeanDraper) - Front-end Developer
+[Tyler Sanzo](https://github.com/tyler-sanzo) - Project Manager\
+[Chris Garcia](https://github.com/chrisagarcia) - Lead Developer\
+[Alex Huynh](https://github.com/alexhuynh0530) - Backend Developer\
+[Sean Draper](https://github.com/SeanDraper) - Front-end Developer\
 [Ariel Griffin](https://github.com/griffindex) - DevOps Developer
 
 ## Deployment
