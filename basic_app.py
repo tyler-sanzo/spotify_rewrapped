@@ -1,5 +1,4 @@
 
-import re
 from flask import Flask, render_template, request, redirect, session, url_for
 
 # python modules for data manipulation and visualization
