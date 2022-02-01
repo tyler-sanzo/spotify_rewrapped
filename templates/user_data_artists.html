@@ -13,7 +13,7 @@
 	<!-- css styling taken from w3 schools templates -->
 </head>
 
-<body>
+<body class="background_faded">
 	<div>
 
 
@@ -25,12 +25,14 @@
 			{% elif data2 == 'medium_term' %}
 				<h2>Last 6 Months</h2>
 			{% else %}
-				<h2>All Time</h2>	
+				<h2>All Time</h2>
 			{% endif %}
 			<div>
-				<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=artists'>Last Month</a>
-				<a type="button" class="btn btn-success" href='/user_data?time_range=medium_term&search=artists'>Last 6 Months</a>
-				<a type="button" class="btn btn-success" href='/user_data?time_range=long_term&search=artists'>All Time</a>
+				<div>
+					<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=artists'>Last Month</a>
+					<a type="button" class="btn btn-success" href='/user_data?time_range=medium_term&search=artists'>Last 6 Months</a>
+					<a type="button" class="btn btn-success" href='/user_data?time_range=long_term&search=artists'>All Time</a>
+				</div>
 				<a type="button" class="btn btn-success" href='/'>Home</a>
 				<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=tracks'>Top Tracks</a>
 			</div>
@@ -69,7 +71,7 @@
 <br>
 
 				<div class='plots_list'>
-				
+
 				</div>
 
 			</div>
