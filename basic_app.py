@@ -1,4 +1,5 @@
 
+import re
 from flask import Flask, render_template, request, redirect, session, url_for
 
 # python modules for data manipulation and visualization
@@ -50,9 +51,21 @@ def top_artists_cleaner(data):
 	
 	return x
 
-
 app = Flask(__name__)
 app.secret_key = 'wowza'
+
+@app.context_processor
+def track_string_format():
+	
+	def delengthener(name: str):
+	
+		if len(name) > 20:
+			return name[:20] + '...'
+	
+		return name
+
+
+	return dict(delengthener=delengthener)
 
 
 auth_manager = SpotifyOAuth(
@@ -91,64 +104,100 @@ def user_data():
 
 
 	if not request.args.get('time_range'):
-		return redirect('/user_data?time_range=short_term')
+		return redirect('/user_data?time_range=short_term&type=track')
 
 
 	# return your top features and a matplot viz
 	if request.args.get('time_range'):
 
-		# api call to get top songs in some range, clean and set as df
-		time_range = request.args['time_range']
+		if (request.args.get('type') == 'track'):
+			# api call to get top songs in some range, clean and set as df
+			time_range = request.args['time_range']
 
-		# calling for the user data and simultaneously cleaning/framing
-		df = pd.DataFrame(
-			top_tracks_cleaner(
-				sp.current_user_top_tracks(limit=50, time_range=time_range)))
-
-
-		# saving IDs for future calls
-		id_list = df['id'].to_list()
+			# calling for the user data and simultaneously cleaning/framing
+			df = pd.DataFrame(
+				top_tracks_cleaner(
+					sp.current_user_top_tracks(limit=50, time_range=time_range)))
 
 
+			# saving IDs for future calls
+			id_list = df['id'].to_list()
 
-		# api call to get top artists
-		artists_json = sp.current_user_top_artists(limit=50, time_range=time_range)
-		top_artists_df = pd.DataFrame(top_artists_cleaner(artists_json))
+			# api call to grab the features of those songs from their IDs
+			features_json = sp.audio_features(id_list)
+			features_df = pd.DataFrame(features_json)
 
-
-
-		# api call to grab the features of those songs from their IDs
-		features_json = sp.audio_features(id_list)
-		features_df = pd.DataFrame(features_json)
-
-		# merge the two df on their ID
-		merged = pd.merge(df, features_df).drop(labels=['uri', 'track_href', 'analysis_url', 'duration_ms'], axis=1)
+			# merge the two df on their ID
+			merged = pd.merge(df, features_df).drop(labels=['uri', 'track_href', 'analysis_url', 'duration_ms'], axis=1)
 
 
-		# plotting each feature / saving the svg in a dictionary
-		sns.set_style('dark')
-		sns.set_context("paper")
+			# plotting each feature / saving the svg in a dictionary
+			sns.set_style('dark')
+			sns.set_context("paper")
 
-		histogram_svg_elements = {}
-		histogrammable_features = ['popularity', 'key', 'loudness', 'tempo']
+			histogram_svg_elements = {}
+			histogrammable_features = ['popularity', 'key', 'loudness', 'tempo']
 
-		for feature in histogrammable_features:
-			song_feature_series = merged[feature]
-
-
-			fig = sns.displot(data=song_feature_series, kde=True, height=4, aspect=1).set(ylabel=None, xlabel=None).fig
+			for feature in histogrammable_features:
+				song_feature_series = merged[feature]
 
 
-			# using mpld3 library to save as an html svg
-			histogram_svg_elements[feature] = mpld3.fig_to_html(fig)
-			matplotlib.pyplot.clf()
+				fig = sns.displot(data=song_feature_series, kde=True, height=4, aspect=1).set(ylabel=None, xlabel=None).fig
 
 
-		features = merged[['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']]
+				# using mpld3 library to save as an html svg
+				histogram_svg_elements[feature] = mpld3.fig_to_html(fig)
+				matplotlib.pyplot.clf()
 
 
+			features = merged[['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']]
 
-		return render_template('user_data.html', plots=histogram_svg_elements, data=merged)
+			if request.args.get('num'):
+				num = request.args.get('num')
+			else:
+				num = 10
+
+			return render_template(
+				'user_data.html',
+				plots=histogram_svg_elements,
+				data=merged,
+				num=num,
+				type='track',
+				time = time_range
+				)
+		
+		# artist information return
+		if (request.args.get('type') == 'artist'):
+
+			time_range = request.args.get('time_range')
+
+			# api call to get top artists
+			artists_json = sp.current_user_top_artists(limit=50, time_range=time_range)
+			artist_df = pd.DataFrame(top_artists_cleaner(artists_json))
+
+			# collecting genres
+			genre_dict = {}
+			for genre_list in artist_df['genres'].to_list():
+				for genre in genre_list:
+					genre_dict[genre] +=1
+			
+			# grab top user genres
+			top_10_genre_2dlist = sorted(genre_dict.items(), key=lambda item: item[1])[:10]
+
+			# ax = sns.barplot(data=top_10_genre_2dlist)
+			# genre_plot = ax.get_figure()
+
+
+			return str(artist_df['genres'])
+			# render_template(
+			# 	'user_artist_data.html',
+			# 	plots=genre_plot,
+			# 	data=artist_df,
+			# 	type='artist',
+			# 	time = time_range
+			# 	)
+		
+		return redirect('/user_data?time_range=short_term&type=track')
 
 	# if neither condition is met
 	return '<a href="/">Home</a>'

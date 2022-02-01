@@ -19,14 +19,10 @@
 			<h1>[User] Top Tracks and Data</h1>
 			<div>
 				<div class=''>
-					<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&type={{ type }}'>Few Weeks</a>
-					<a type="button" class="btn btn-success" href='/user_data?time_range=medium_term&type={{ type }}'>About a Month</a>
-					<a type="button" class="btn btn-success" href='/user_data?time_range=long_term&type={{ type }}'>All Time</a>
-				</div>
-				<div class=''>
-					<a type="button" class="btn btn-success" href='/user_data?time_range={{ time }}&type=track'>Tracks</a>
-					<a type="button" class="btn btn-success" href='/user_data?time_range={{ time }}&type=artist'>Artists</a>
-				</div>
+					<a type="button" class="btn btn-success" href='/user_data?time_range=short_term'>Few Weeks</a>
+					<a type="button" class="btn btn-success" href='/user_data?time_range=medium_term'>About a Month</a>
+					<a type="button" class="btn btn-success" href='/user_data?time_range=long_term'>All Time</a>
+				</div>	
 				<a type="button" class="btn btn-success" href='/'>Home</a>
 			</div>
 		</div>
@@ -35,9 +31,8 @@
 		<div class='row align-items-center'>
 			<div class='col-1'></div>
 			<div class='col-10 justify-content-center'>
-				<a type='button' class='btn' href=''>Show More</a>
 				<ol class='top_tracks_list'>
-					{% for index, row in data.head(num).iterrows() %}
+					{% for index, row in data.head(10).iterrows() %}
 						<div class='list_item'>
 							<li>
 								<img class='img-responsive album_art' src='{{ row["img"] }}' alt='number {{ index +1 }} song: {{ row["song"] }}' class='album_art' style="width: 10rem; height: 10rem;">
