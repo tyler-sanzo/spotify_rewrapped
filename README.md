@@ -7,11 +7,11 @@
 This web application displays a user’s top tracks and artists in the past month, 6 months, and all time, along with visualizations of their listening data.
 
 ## Contributors
-Tyler Sanzo - Project Manager
-Chris Garcia - Lead Developer
-Alex Huynh - Backend Developer
-Sean Draper - Front-end Developer
-Ariel Griffin - DevOps Developer
+[Tyler Sanzo](https://github.com/tyler-sanzo) - Project Manager
+[Chris Garcia](https://github.com/chrisagarcia) - Lead Developer
+[Alex Huynh](https://github.com/alexhuynh0530) - Backend Developer
+[Sean Draper](https://github.com/SeanDraper) - Front-end Developer
+[Ariel Griffin](https://github.com/griffindex) - DevOps Developer
 
 ## Deployment
 Spotify Re-Wrapped is deployed via Heroku. Check out your listening data with the link below!
