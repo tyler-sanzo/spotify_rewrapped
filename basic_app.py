@@ -56,6 +56,25 @@ app = Flask(__name__)
 app.secret_key = 'wowza'
 
 
+# function passed to jinja
+@app.context_processor
+def track_string_format():
+	
+	def delengthener(name: str):
+	
+		if len(name) > 20:
+			return name[:20] + '...'
+	
+		return name
+
+
+	return dict(delengthener=delengthener)
+
+
+
+
+
+# spotipy authentification object
 auth_manager = SpotifyOAuth(
 	scope=['user-top-read',
 	'user-read-recently-played',
@@ -139,7 +158,12 @@ def user_data():
 
 		features = merged[['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']]
 
-		return render_template('user_data.html', plots=histogram_svg_elements, data=merged, data2=time_range)
+		return render_template(
+			'user_data.html',
+			plots=histogram_svg_elements,
+			data=merged,
+			time=time_range
+			)
 
 	
 	#return your top artists
@@ -154,10 +178,28 @@ def user_data():
 				sp.current_user_top_artists(limit=50, time_range=time_range)))
 
 
-		# saving IDs for future calls
-		id_list = df['id'].to_list()
+		# collecting genres
+		genre_dict = {}
+		for genre_list in df['genres'].to_list():
+			for genre in genre_list:
+				for word in genre.split():
+					if word not in genre_dict:
+						genre_dict[word] = 1
+					else:
+						genre_dict[word] += 1
+		
+		# grab top user genres
+		top_10_genre_2dlist = sorted(genre_dict.items(), key=lambda item: item[1])[:10]
 
-		return render_template('user_data_artists.html', data=df, data2=time_range)
+		# ax = sns.barplot(data=top_10_genre_2dlist)
+		# genre_plot = ax.get_figure()
+
+		return str(genre_dict) 
+		# render_template(
+		# 	'user_data_artists.html',
+		# 	data=df,
+		# 	time=time_range
+		# 	)
 
 
 
