@@ -113,6 +113,13 @@ def user_data():
 	if not request.args.get('time_range'):
 		return redirect('/user_data?time_range=short_term&search=tracks')
 
+	# checks url for a num argument and assigns num variable to the arg
+	# default is 10
+	if request.args.get('num'):
+		num = int(request.args.get('num'))
+	else:
+		num = 10
+
 
 	# return your top tracks and a matplot viz
 	if request.args.get('search') == 'tracks':
@@ -162,7 +169,8 @@ def user_data():
 			'user_data.html',
 			plots=histogram_svg_elements,
 			data=merged,
-			time=time_range
+			time=time_range,
+			num=num
 			)
 
 	
@@ -194,11 +202,12 @@ def user_data():
 		# ax = sns.barplot(data=top_10_genre_2dlist)
 		# genre_plot = ax.get_figure()
 
-		return str(genre_dict) 
+		return str(top_10_genre_2dlist) 
 		# render_template(
 		# 	'user_data_artists.html',
 		# 	data=df,
-		# 	time=time_range
+		# 	time=time_range,
+		#	num=num
 		# 	)
 
 

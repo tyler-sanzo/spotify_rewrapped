@@ -38,9 +38,9 @@
 			<div class='row align-items-center'>
 				<div class='col-1'></div>
 				<div class='col-10 justify-content-center'>
-					<a type='button' class='btn' href=''>Show More</a>
+					<a type='button' class='btn' href='/user_data?time_range={{ time }}&search=tracks&num=50'>Show More</a>
 					<ol class='top_tracks_list'>
-						{% for index, row in data.head(10).iterrows() %}
+						{% for index, row in data.head(num).iterrows() %}
 							<div class='list_item'>
 								<li>
 									<img class='img-responsive album_art' src='{{ row["img"] }}' alt='number {{ index +1 }} song: {{ row["song"] }}' class='album_art' style="width: 10rem; height: 10rem;">
