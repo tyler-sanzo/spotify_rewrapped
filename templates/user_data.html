@@ -13,7 +13,7 @@
 	<!-- css styling taken from w3 schools templates -->
 </head>
 
-<body>
+<body class="background_faded">
 	<div>
 		<div class='header'>
 			<h1>[User] Top Tracks and Data</h1>
@@ -22,7 +22,7 @@
 			{% elif time == 'medium_term' %}
 				<h2>Last 6 Months</h2>
 			{% else %}
-				<h2>All Time</h2>	
+				<h2>All Time</h2>
 			{% endif %}
 			<div>
 				<div>
@@ -68,6 +68,8 @@
 					<br>
 					<div class='plots_list'>
 						<h2 style="text-align:center">Audio Features Distributions</h2>
+						<br>
+			
 					{% for name, svg in plots.items() %}
 							<div class='{{ name }}'>
 								<div class='plot_text'>
