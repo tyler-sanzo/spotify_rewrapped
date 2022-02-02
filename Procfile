@@ -1,0 +1,1 @@
+web: gunicorn app:basic_app
