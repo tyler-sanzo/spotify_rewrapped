@@ -102,7 +102,7 @@ def home():
 		
 		# this saves the auth token into a session object
 		code = request.args.get('code')
-
+		session['access_token'] = request.args.get('code')
 		return redirect(url_for('user_data', code=code))
 
 	# initial load in template this renders essentially only renders on the first load
