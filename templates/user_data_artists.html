@@ -15,77 +15,52 @@
 
 <body class="background_faded">
 	<div>
-
-
-
 		<div class='header'>
-			<h1>[User] Top Artists and Data</h1>
-			{% if data2 == 'short_term' %}
+			<h1>Top Artists</h1>
+			{% if time == 'short_term' %}
 				<h2>Last Month</h2>
-			{% elif data2 == 'medium_term' %}
+			{% elif time == 'medium_term' %}
 				<h2>Last 6 Months</h2>
 			{% else %}
 				<h2>All Time</h2>
 			{% endif %}
 			<div>
 				<div>
-					<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=artists'>Last Month</a>
-					<a type="button" class="btn btn-success" href='/user_data?time_range=medium_term&search=artists'>Last 6 Months</a>
-					<a type="button" class="btn btn-success" href='/user_data?time_range=long_term&search=artists'>All Time</a>
+					<a type="button" class="btn btn-success" href='/user_data?code={{ code }}&time_range=short_term&search=artists'>Last Month</a>
+					<a type="button" class="btn btn-success" href='/user_data?code={{ code }}&time_range=medium_term&search=artists'>Last 6 Months</a>
+					<a type="button" class="btn btn-success" href='/user_data?code={{ code }}&time_range=long_term&search=artists'>All Time</a>
 				</div>
 				<a type="button" class="btn btn-success" href='/'>Home</a>
-				<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=tracks'>Top Tracks</a>
+				<a type="button" class="btn btn-success" href='/user_data?code={{ code }}&time_range={{ time }}&search=tracks'>Top Tracks</a>
 			</div>
 		</div>
-
-
-		<div class='row'>
-
-			<div class='column_1'>
-				<ol class='top_tracks_list'>
-					{% for index, row in data.head(10).iterrows() %}
-
-
-						<div class='list_item'>
-							<li>
-								<img src='{{ row["images"] }}' alt='number {{ index +1 }} artist: {{ row["artist"] }}' class='album_art' style="width: 10rem; height: 10rem;">
-
-
-
-								<div class='song_info'>
-									<div class='artist_name'>
-										<span><b>{{ row["artist"] }}</b><span>
+		<div class='container'>
+			<div class='row align-items-center'>
+				<div class='col-1'></div>
+				<div class='col-10 justify-content-center'>
+					<a type='button' class='btn' href='/user_data?code={{ code }}&time_range={{ time }}&search=tracks&num=50'>Show More</a>
+					<ol class='top_tracks_list'>
+						{% for index, row in data.head(num).iterrows() %}
+							<div class='list_item'>
+								<li>
+									<div class='card'>
+										<img class='img-responsive album_art' src='{{ row["images"] }}' alt='number {{ index +1 }} song: {{ row["song"] }}' class='album_art' style="width: 10rem; height: 10rem;">
+										<div class='song_info'>
+											<div class='song_name'>
+												<span><b>{{ row["artist"] }}</b><span>
+											</div>
+											<div class='album_name'>
+												<span>{{ ', '.join(row["genres"][0:3]) }}</span>
+											</div>
+										</div>
 									</div>
-								</div>
-							</li>
-						</div>
-
-					{% endfor %}
-				</ol>
-			</div>
-
-
-			<div class='column_2'>
-				<h2 style="text-align:center">Genre Plots Go Here</h2>
-<br>
-<br>
-
-				<div class='plots_list'>
-
+								</li>
+							</div>
+						{% endfor %}
+					</ol>
 				</div>
-
 			</div>
-
-			<div class='column_3'>
-
-			</div>
-
+			
 		</div>
-
-	</div>
-</body>
-<script>
-	var data = document.getElementById("json_me");
-	console.log(data);
-</script>
-</html>
+	</body>
+	</html>

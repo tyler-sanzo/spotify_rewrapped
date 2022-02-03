@@ -16,7 +16,7 @@
 <body class="background_faded">
 	<div>
 		<div class='header'>
-			<h1>[User] Top Tracks and Data</h1>
+			<h1>Top Tracks and Data</h1>
 			{% if time == 'short_term' %}
 				<h2>Last Month</h2>
 			{% elif time == 'medium_term' %}
@@ -26,19 +26,19 @@
 			{% endif %}
 			<div>
 				<div>
-					<a type="button" class="btn btn-success" href='/user_data?time_range=short_term&search=tracks'>Last Month</a>
-					<a type="button" class="btn btn-success" href='/user_data?time_range=medium_term&search=tracks'>Last 6 Months</a>
-					<a type="button" class="btn btn-success" href='/user_data?time_range=long_term&search=tracks'>All Time</a>
+					<a type="button" class="btn btn-success" href='/user_data?code={{ code }}&time_range=short_term&search=tracks'>Last Month</a>
+					<a type="button" class="btn btn-success" href='/user_data?code={{ code }}&time_range=medium_term&search=tracks'>Last 6 Months</a>
+					<a type="button" class="btn btn-success" href='/user_data?code={{ code }}&time_range=long_term&search=tracks'>All Time</a>
 				</div>
 				<a type="button" class="btn btn-success" href='/'>Home</a>
-				<a type="button" class="btn btn-success" href='/user_data?time_range={{ time }}&search=artists'>Top Artists</a>
+				<a type="button" class="btn btn-success" href='/user_data?code={{ code }}&time_range={{ time }}&search=artists'>Top Artists</a>
 			</div>
 		</div>
 		<div class='container'>
 			<div class='row align-items-center'>
 				<div class='col-1'></div>
 				<div class='col-10 justify-content-center'>
-					<a type='button' class='btn' href='/user_data?time_range={{ time }}&search=tracks&num=50'>Show More</a>
+					<a type='button' class='btn' href='/user_data?code={{ code }}&time_range={{ time }}&search=tracks&num=50'>Show More</a>
 					<ol class='top_tracks_list'>
 						{% for index, row in data.head(num).iterrows() %}
 							<div class='list_item'>
@@ -62,7 +62,6 @@
 				</div>
 			</div>
 			<div class='row align-items-center'>
-				<div class='col-1'></div>
 				<div class='col-10 justify-content-center'>
 					<br>
 					<br>
@@ -71,6 +70,14 @@
 						<br>
 			
 					{% for name, svg in plots.items() %}
+							<div class='{{ name }}'>
+								<div class='plot_text'>
+									<p>{{ name.capitalize() }}</p>
+								</div>
+									{{ svg | safe }}
+							</div>
+					{% endfor %}
+					{% for name, svg in data2.items() %}
 							<div class='{{ name }}'>
 								<div class='plot_text'>
 									<p>{{ name.capitalize() }}</p>

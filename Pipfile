@@ -10,6 +10,10 @@ pandas = "*"
 mpld3 = "*"
 scipy = "*"
 seaborn = "*"
+gunicorn = "*"
+flask-session = "*"
+uuid = "*"
+requests = "*"
 
 [dev-packages]
 

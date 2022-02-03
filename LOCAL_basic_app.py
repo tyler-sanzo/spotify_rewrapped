@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, session, url_for
 
 # python modules for data manipulation and visualization
 import pandas as pd
@@ -16,10 +16,16 @@ matplotlib.use('Agg')
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+# local python files
+from keys import client_id, client_secret
+
+
 
 import requests
 import base64
 import json
+
+port = 5000
 
 
 def top_tracks_cleaner(data):
@@ -55,7 +61,7 @@ def top_artists_cleaner(data):
 
 
 app = Flask(__name__)
-app.secret_key = os.urandom(64)
+app.secret_key = 'wowza'
 
 
 # function passed to jinja
@@ -72,18 +78,19 @@ def track_string_format():
 
 	return dict(delengthener=delengthener)
 
-
 # spotipy authentification object
 auth_manager = SpotifyOAuth(
 	scope=['user-top-read',
 	'user-read-recently-played',
 	'user-library-read'
 	],
-	client_id=os.environ['CLIENT_ID'],
-	client_secret=os.environ['CLIENT_SECRET'],
-	redirect_uri=f"https://spotify-test-deployment.herokuapp.com/",
+	client_id=client_id,
+	client_secret=client_secret,
+	redirect_uri=f"http://127.0.0.1:{port}",
 	show_dialog=True,
 	)
+
+
 
 
 # home route. renders index.html 
@@ -105,8 +112,8 @@ def home():
 def user_data():
 
 	code = request.args['code']
-	# auth_manager.get_access_token(code=code, as_dict=True, check_cache=False)
-
+	auth_manager.get_access_token(session.get('access_token'))
+	'''
 	url = 'https://accounts.spotify.com/api/token'
 	message = f"{client_id}:{client_secret}"
 	
@@ -128,7 +135,6 @@ def user_data():
 		
 	r = requests.post(url, headers=payload['headers'], data=payload['form'])
 	json = dict(r.json())
-	
 	token = {
 		'access_token': json[list(json.keys())[0]],
 		'token_type': 'Bearer',
@@ -136,10 +142,10 @@ def user_data():
 		"scope": "user-library-read user-read-recently-played user-top-read",
 		"expires_at": 1643851318
 		}
-
-
+	
 
 	auth_manager.validate_token(token)
+	'''
 	sp = spotipy.Spotify(auth_manager=auth_manager)
 
 	if not request.args.get('time_range'):
@@ -184,16 +190,36 @@ def user_data():
 			song_feature_series = merged[feature]
 
 
-			fig = sns.displot(data=song_feature_series, kde=True, height=4, aspect=1).set(ylabel=None, xlabel=None).fig
+			fig = sns.displot(data=song_feature_series, kde=False, height=4, aspect=1).set(ylabel=None, xlabel=None).fig
 
 
 			# using mpld3 library to save as an html svg
 			histogram_svg_elements[feature] = mpld3.fig_to_html(fig)
 			matplotlib.pyplot.clf()
+	
+		features2 = {}
+		features = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
+		for feature in features:
+			song_feature_series = merged[feature]
+			fig = sns.displot(data=song_feature_series, kde=True, height=4, aspect=1).set(ylabel=None, xlabel=None).fig
 
 
+            # using mpld3 library to save as an html svg
+			features2[feature] = mpld3.fig_to_html(fig)
+			matplotlib.pyplot.clf()
+			
+		return render_template(
+            'user_data.html',
+            plots=histogram_svg_elements,
+            data=merged,
+            data2=features2,
+            time=time_range,
+            num=num,
+            code=code
+            )
+
+		'''
 		features = merged[['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']]
-
 		return render_template(
 			'user_data.html',
 			plots=histogram_svg_elements,
@@ -202,7 +228,7 @@ def user_data():
 			num=num,
 			code=code
 			)
-
+		'''
 	
 	#return your top artists
 	if request.args.get('search') == 'artists':
@@ -255,4 +281,4 @@ def login_function():
 
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(debug=True, port=port)

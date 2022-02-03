@@ -121,6 +121,52 @@ body {
     margin-right: 100px;
 }
 
+.danceability {
+  width:300px;
+  float:left;
+  margin-right: 100px;
+  margin-left: 100px;
+}
+
+.energy {
+  width:300px;
+  float:left;
+  margin-right: 100px;
+}
+
+.speechiness {
+  width:300px;
+  float:left;
+  margin-right: 100px;
+  margin-left: 100px;
+}
+
+.acousticness {
+  width:300px;
+  float:left;
+  margin-right: 100px;
+}
+
+.instrumentalness {
+  width:300px;
+  float:left;
+  margin-right: 100px;
+  margin-left: 100px;
+}
+
+.liveness {
+  width:300px;
+  float:left;
+  margin-right: 100px;
+}
+
+.valence {
+  width:300px;
+  float:left;
+  margin-right: 100px;
+  margin-left: 100px;
+}
+
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
 @media (max-width: 600px) {
   .column {
